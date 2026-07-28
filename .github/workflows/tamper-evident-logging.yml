@@ -1,0 +1,35 @@
+name: AVL-1 Tamper-Evident Logging Test
+
+on:
+  push:
+    paths:
+      - 'tests/tamper_evident_logging/**'
+      - '.github/workflows/tamper-evident-logging.yml'
+  pull_request:
+    paths:
+      - 'tests/tamper_evident_logging/**'
+  workflow_dispatch: {}
+
+jobs:
+  run-tamper-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run AVL-1 tamper-evident logging test
+        working-directory: tests/tamper_evident_logging
+        run: |
+          python run_tamper_test.py | tee test_output.log
+
+      - name: Upload test output as artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tamper-test-results
+          path: tests/tamper_evident_logging/test_output.log
