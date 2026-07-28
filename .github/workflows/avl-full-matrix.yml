@@ -1,0 +1,116 @@
+name: AVL Full Matrix (AVL-1 v2, AVL-2, AVL-3, AVL-4)
+
+on:
+  push:
+    paths:
+      - 'tests/**'
+      - '.github/workflows/avl-full-matrix.yml'
+  pull_request:
+    paths:
+      - 'tests/**'
+  workflow_dispatch: {}
+
+jobs:
+  avl1-v2-cross-os:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate real-hash fixtures (N=500)
+        working-directory: tests/tamper_evident_logging
+        run: python generate_fixtures.py --n 500 --seed 42 --out fixtures_v2.json
+
+      - name: Run AVL-1 v2 tamper test (adversarial, real hashes)
+        working-directory: tests/tamper_evident_logging
+        run: python run_tamper_test_v2.py --fixtures fixtures_v2.json --adversarial-rounds 200 | tee test_output_v2_${{ matrix.os }}.log
+
+      - name: Upload v2 results (per-OS)
+        uses: actions/upload-artifact@v4
+        with:
+          name: avl1-v2-results-${{ matrix.os }}
+          path: |
+            tests/tamper_evident_logging/test_output_v2_${{ matrix.os }}.log
+            tests/tamper_evident_logging/fixtures_v2.json
+
+  avl2-lattice-scoring:
+    runs-on: ubuntu-latest
+    needs: avl1-v2-cross-os
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Generate fixtures for AVL-2
+        working-directory: tests/tamper_evident_logging
+        run: python generate_fixtures.py --n 500 --seed 42 --out fixtures_v2.json
+
+      - name: Run AVL-2 DCS/SHIP GATE test
+        working-directory: tests/avl2_lattice_scoring
+        run: python run_avl2_test.py --fixtures ../tamper_evident_logging/fixtures_v2.json | tee avl2_output.log
+
+      - name: Upload AVL-2 results
+        uses: actions/upload-artifact@v4
+        with:
+          name: avl2-results
+          path: tests/avl2_lattice_scoring/avl2_output.log
+
+  avl3-signed-proofs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install cryptography
+        run: pip install cryptography
+
+      - name: Run AVL-3 Ed25519 signing test
+        working-directory: tests/avl3_signed_proofs
+        env:
+          ZOE_SIGNING_KEY: ${{ secrets.ZOE_SIGNING_KEY }}
+        run: python run_avl3_test.py | tee avl3_output.log
+
+      - name: Upload AVL-3 results
+        uses: actions/upload-artifact@v4
+        with:
+          name: avl3-results
+          path: tests/avl3_signed_proofs/avl3_output.log
+
+  avl4-anchoring:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Run AVL-4 offline-fallback + log-integrity test
+        working-directory: tests/avl4_anchoring
+        run: python run_avl4_test.py | tee avl4_output.log
+
+      - name: Upload AVL-4 results
+        uses: actions/upload-artifact@v4
+        with:
+          name: avl4-results
+          path: tests/avl4_anchoring/avl4_output.log
