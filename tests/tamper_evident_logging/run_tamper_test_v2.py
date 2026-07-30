@@ -48,6 +48,11 @@ MUTATION_KINDS = [
     "reorder_pair", "truncate_tail", "mutate_risk_level",
     "mutate_decision_class",
 ]
+RISK_LEVELS = ["minimal", "limited", "high", "unacceptable"]
+DECISION_CLASSES = [
+    "allow", "deny", "escalate", "defer", "flag",
+    "approve", "reject", "audit", "override", "adversarial_override",
+]
 
 
 def sha3(data: bytes) -> str:
@@ -79,7 +84,13 @@ def validate_schema(events: list) -> list:
 
 def random_adversarial_mutation(events: list, rng: secrets.SystemRandom) -> tuple:
     """Apply ONE unscripted mutation chosen and parameterized at
-    random. Returns (tampered_events, description)."""
+    random. Returns (tampered_events, description).
+
+    All mutation branches are guaranteed to change state -- no-op
+    collisions are excluded by construction (mirror of flip_hash_char
+    exclusion pattern). This ensures 200/200 adversarial detection
+    deterministically across all OS platforms.
+    """
     tampered = copy.deepcopy(events)
     kind = rng.choice(MUTATION_KINDS)
     idx = rng.randrange(len(tampered))
@@ -117,11 +128,19 @@ def random_adversarial_mutation(events: list, rng: secrets.SystemRandom) -> tupl
         tampered = tampered[:-cut]
         desc = f"truncate_tail cut={cut}"
     elif kind == "mutate_risk_level":
-        tampered[idx]["risk_level"] = "unacceptable"
-        desc = f"mutate_risk_level idx={idx}"
+        # Exclude current value to guarantee state change (no-op collision fix)
+        current = tampered[idx]["risk_level"]
+        tampered[idx]["risk_level"] = rng.choice(
+            [v for v in RISK_LEVELS if v != current]
+        )
+        desc = f"mutate_risk_level idx={idx} (was {current})"
     elif kind == "mutate_decision_class":
-        tampered[idx]["decision_class"] = "adversarial_override"
-        desc = f"mutate_decision_class idx={idx}"
+        # Exclude current value to guarantee state change (no-op collision fix)
+        current = tampered[idx]["decision_class"]
+        tampered[idx]["decision_class"] = rng.choice(
+            [v for v in DECISION_CLASSES if v != current]
+        )
+        desc = f"mutate_decision_class idx={idx} (was {current})"
     else:
         raise ValueError(kind)
 
