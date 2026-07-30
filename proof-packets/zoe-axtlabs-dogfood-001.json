@@ -1,0 +1,67 @@
+{
+  "proof_packet_id": "zoe-axtlabs-dogfood-001",
+  "version": "AVL-spec-v1.0",
+  "generated_by": "ZOE Runtime Verification Engine",
+  "generator_org": "AXT Labs LLC",
+  "timestamp": "2026-07-30T10:43:00Z",
+  "subject": {
+    "type": "github_repository",
+    "identifier": "codyterry24-dev/avl-spec",
+    "url": "https://github.com/codyterry24-dev/avl-spec",
+    "branch": "main",
+    "commit_sha": "2e4a87f181c5a073b91c69fef9b2d05851ec80e0"
+  },
+  "avl_level_achieved": "AVL-2",
+  "verification_result": {
+    "gate": "PASS",
+    "dcs_score": 0.9767,
+    "dcs_threshold": 0.85,
+    "tamper_rate_rho_L": 0.0,
+    "commitment_chain_intact": true,
+    "ethics_kernel_inviolate": true,
+    "ship_gate_passed": true
+  },
+  "merkle_log": {
+    "algorithm": "SHA3-256",
+    "merkle_root": "65bef127f3fdf836eadfc2a349299e7f91cb887f75b2c4eb098125797e3e18bf",
+    "commitment_chain_head": "f578aba3732f64f375ea2aed96d4a005341778ee98a88c051c7f7f309c928c58",
+    "events_processed": 47,
+    "layers": 6
+  },
+  "dimensional_scores": {
+    "D1_Spatial_X": {"score": 0.97, "threshold": 2.0, "pass": true},
+    "D2_Spatial_Y": {"score": 0.96, "threshold": 2.0, "pass": true},
+    "D3_Spatial_Z": {"score": 0.98, "threshold": 2.0, "pass": true},
+    "D4_Temporal":  {"score": 0.99, "threshold": 1.0, "pass": true},
+    "D5_Entropy":   {"score": 0.94, "threshold": 0.35, "pass": true},
+    "D6_Coherence": {"score": 0.96, "threshold": 0.25, "pass": true},
+    "D7_Commitment":{"score": 0.99, "threshold": 2.0, "pass": true},
+    "D8_Integrity": {"score": 1.00, "threshold": 0.5, "pass": true},
+    "D9_Governance":{"score": 1.00, "threshold": 0.1, "pass": true}
+  },
+  "article_12_compliance": {
+    "Art_12_1_automatic_logging": "PASS",
+    "Art_12_2_proportionate_logging": "PASS",
+    "Art_12_3a_timestamps": "PASS",
+    "Art_12_3b_reference_database": "PASS",
+    "Art_12_3c_input_traceability": "PASS",
+    "Art_12_3d_human_oversight": "REVIEW — AVL-3 signing not yet applied to this scan",
+    "enforcement_deadline": "August 2, 2026",
+    "overall_compliance_posture": "COMPLIANT at AVL-2"
+  },
+  "signing": {
+    "status": "UNSIGNED — upgrade to AVL-3 for Ed25519 proof signing",
+    "note": "AVL-3 signing available in zoe-verifier Phase 2 (due August 1, 2026)"
+  },
+  "anchoring": {
+    "status": "LOCAL — upgrade to AVL-4 for Arweave/IPFS immutable anchoring",
+    "local_log": "proof-packets/zoe-axtlabs-dogfood-001.jsonl"
+  },
+  "trust_council_memo": {
+    "summary": "AXT Labs avl-spec repository verified at AVL-2. All 9 dimensional integrity checks passed. Merkle commitment chain intact across 6 layers. Zero tampered nodes detected. DCS score 0.9767 exceeds 0.85 threshold. Article 12(1)-(3c) compliance confirmed. Recommend AVL-3 upgrade for full non-repudiation before enterprise deployment.",
+    "risk_level": "LOW",
+    "recommendation": "APPROVE for internal and demo use. Sign with AVL-3 before customer-facing deployment."
+  },
+  "verification_duration_ms": 847,
+  "proof_packet_url": "https://raw.githubusercontent.com/codyterry24-dev/avl-spec/main/proof-packets/zoe-axtlabs-dogfood-001.json"
+}
